@@ -1,0 +1,461 @@
+   0  $accept : %entry% $end
+
+   1  toplevel : RULE rule
+   2           | RULE fact
+   3           | QUERY query
+   4           | DOT
+   5           | SEMI
+
+   6  query : predicates
+
+   7  fact : predicate DOT
+
+   8  rule : predicate IMPLY predicates DOT
+
+   9  predicates : predicate
+  10             | predicate COMMA predicates
+
+  11  predicate : SYMBID LPAR terms RPAR
+  12            | SYMBID
+
+  13  terms : term
+  14        | term COMMA terms
+
+  15  term : atomic
+  16       | SYMBID LPAR symbs RPAR
+
+  17  symbs : atomic
+  18        | atomic COMMA symbs
+
+  19  atomic : SYMBID
+  20         | NUMBER
+  21         | VARID
+  22         | list
+
+  23  atomics : list_last
+  24          | atomic COMMA atomics
+
+  25  list_last : atomic
+  26            | atomic BAR atomic
+
+  27  list : NIL
+  28       | LBRACKET atomics RBRACKET
+
+  29  %entry% : '\001' toplevel
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . toplevel  (29)
+
+	RULE  shift 3
+	QUERY  shift 4
+	DOT  shift 5
+	SEMI  shift 6
+	.  error
+
+	toplevel  goto 7
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	toplevel : RULE . rule  (1)
+	toplevel : RULE . fact  (2)
+
+	SYMBID  shift 8
+	.  error
+
+	rule  goto 9
+	fact  goto 10
+	predicate  goto 11
+
+
+state 4
+	toplevel : QUERY . query  (3)
+
+	SYMBID  shift 8
+	.  error
+
+	query  goto 12
+	predicates  goto 13
+	predicate  goto 14
+
+
+state 5
+	toplevel : DOT .  (4)
+
+	.  reduce 4
+
+
+state 6
+	toplevel : SEMI .  (5)
+
+	.  reduce 5
+
+
+state 7
+	%entry% : '\001' toplevel .  (29)
+
+	.  reduce 29
+
+
+state 8
+	predicate : SYMBID . LPAR terms RPAR  (11)
+	predicate : SYMBID .  (12)
+
+	LPAR  shift 15
+	$end  reduce 12
+	IMPLY  reduce 12
+	COMMA  reduce 12
+	DOT  reduce 12
+
+
+state 9
+	toplevel : RULE rule .  (1)
+
+	.  reduce 1
+
+
+state 10
+	toplevel : RULE fact .  (2)
+
+	.  reduce 2
+
+
+state 11
+	fact : predicate . DOT  (7)
+	rule : predicate . IMPLY predicates DOT  (8)
+
+	IMPLY  shift 16
+	DOT  shift 17
+	.  error
+
+
+state 12
+	toplevel : QUERY query .  (3)
+
+	.  reduce 3
+
+
+state 13
+	query : predicates .  (6)
+
+	.  reduce 6
+
+
+state 14
+	predicates : predicate .  (9)
+	predicates : predicate . COMMA predicates  (10)
+
+	COMMA  shift 18
+	$end  reduce 9
+	DOT  reduce 9
+
+
+state 15
+	predicate : SYMBID LPAR . terms RPAR  (11)
+
+	SYMBID  shift 19
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	terms  goto 24
+	term  goto 25
+	atomic  goto 26
+	list  goto 27
+
+
+state 16
+	rule : predicate IMPLY . predicates DOT  (8)
+
+	SYMBID  shift 8
+	.  error
+
+	predicates  goto 28
+	predicate  goto 14
+
+
+state 17
+	fact : predicate DOT .  (7)
+
+	.  reduce 7
+
+
+state 18
+	predicates : predicate COMMA . predicates  (10)
+
+	SYMBID  shift 8
+	.  error
+
+	predicates  goto 29
+	predicate  goto 14
+
+
+state 19
+	term : SYMBID . LPAR symbs RPAR  (16)
+	atomic : SYMBID .  (19)
+
+	LPAR  shift 30
+	COMMA  reduce 19
+	RPAR  reduce 19
+
+
+state 20
+	atomic : VARID .  (21)
+
+	.  reduce 21
+
+
+state 21
+	atomic : NUMBER .  (20)
+
+	.  reduce 20
+
+
+state 22
+	list : LBRACKET . atomics RBRACKET  (28)
+
+	SYMBID  shift 31
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	atomic  goto 32
+	list  goto 27
+	atomics  goto 33
+	list_last  goto 34
+
+
+state 23
+	list : NIL .  (27)
+
+	.  reduce 27
+
+
+state 24
+	predicate : SYMBID LPAR terms . RPAR  (11)
+
+	RPAR  shift 35
+	.  error
+
+
+state 25
+	terms : term .  (13)
+	terms : term . COMMA terms  (14)
+
+	COMMA  shift 36
+	RPAR  reduce 13
+
+
+state 26
+	term : atomic .  (15)
+
+	.  reduce 15
+
+
+state 27
+	atomic : list .  (22)
+
+	.  reduce 22
+
+
+state 28
+	rule : predicate IMPLY predicates . DOT  (8)
+
+	DOT  shift 37
+	.  error
+
+
+state 29
+	predicates : predicate COMMA predicates .  (10)
+
+	.  reduce 10
+
+
+state 30
+	term : SYMBID LPAR . symbs RPAR  (16)
+
+	SYMBID  shift 31
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	atomic  goto 38
+	symbs  goto 39
+	list  goto 27
+
+
+state 31
+	atomic : SYMBID .  (19)
+
+	.  reduce 19
+
+
+state 32
+	atomics : atomic . COMMA atomics  (24)
+	list_last : atomic .  (25)
+	list_last : atomic . BAR atomic  (26)
+
+	COMMA  shift 40
+	BAR  shift 41
+	RBRACKET  reduce 25
+
+
+state 33
+	list : LBRACKET atomics . RBRACKET  (28)
+
+	RBRACKET  shift 42
+	.  error
+
+
+state 34
+	atomics : list_last .  (23)
+
+	.  reduce 23
+
+
+state 35
+	predicate : SYMBID LPAR terms RPAR .  (11)
+
+	.  reduce 11
+
+
+state 36
+	terms : term COMMA . terms  (14)
+
+	SYMBID  shift 19
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	terms  goto 43
+	term  goto 25
+	atomic  goto 26
+	list  goto 27
+
+
+state 37
+	rule : predicate IMPLY predicates DOT .  (8)
+
+	.  reduce 8
+
+
+state 38
+	symbs : atomic .  (17)
+	symbs : atomic . COMMA symbs  (18)
+
+	COMMA  shift 44
+	RPAR  reduce 17
+
+
+state 39
+	term : SYMBID LPAR symbs . RPAR  (16)
+
+	RPAR  shift 45
+	.  error
+
+
+state 40
+	atomics : atomic COMMA . atomics  (24)
+
+	SYMBID  shift 31
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	atomic  goto 32
+	list  goto 27
+	atomics  goto 46
+	list_last  goto 34
+
+
+state 41
+	list_last : atomic BAR . atomic  (26)
+
+	SYMBID  shift 31
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	atomic  goto 47
+	list  goto 27
+
+
+state 42
+	list : LBRACKET atomics RBRACKET .  (28)
+
+	.  reduce 28
+
+
+state 43
+	terms : term COMMA terms .  (14)
+
+	.  reduce 14
+
+
+state 44
+	symbs : atomic COMMA . symbs  (18)
+
+	SYMBID  shift 31
+	VARID  shift 20
+	NUMBER  shift 21
+	LBRACKET  shift 22
+	NIL  shift 23
+	.  error
+
+	atomic  goto 38
+	symbs  goto 48
+	list  goto 27
+
+
+state 45
+	term : SYMBID LPAR symbs RPAR .  (16)
+
+	.  reduce 16
+
+
+state 46
+	atomics : atomic COMMA atomics .  (24)
+
+	.  reduce 24
+
+
+state 47
+	list_last : atomic BAR atomic .  (26)
+
+	.  reduce 26
+
+
+state 48
+	symbs : atomic COMMA symbs .  (18)
+
+	.  reduce 18
+
+
+19 terminals, 15 nonterminals
+30 grammar rules, 49 states
